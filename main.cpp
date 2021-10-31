@@ -9,7 +9,7 @@
 #include <SFML/Audio.hpp>
 #include <string>
 #include <iostream>
-
+#include<cstdlib>
 #include"MainMenu.h"
 
 int main()
@@ -19,11 +19,33 @@ int main()
 
 	sf::Vector2i screenDimensions(1920, 1080);
 
-	sf::RenderWindow MENU(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Hoinoi village", sf::Style::Close | sf::Style::Resize);
-	MainMenu mainMenu(MENU.getSize().x, MENU.getSize().y);
+	sf::RenderWindow Window(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Hoinoi village", sf::Style::Close | sf::Style::Fullscreen);
+	MainMenu mainMenu(Window.getSize().x, Window.getSize().y);
 
-	MENU.setKeyRepeatEnabled(false);
-	MENU.setFramerateLimit(60);
+	Window.setKeyRepeatEnabled(false);
+	Window.setFramerateLimit(60);
+	
+	
+	//set Enermy
+	srand(time(NULL));
+	
+		//Zombie
+		Texture zombieTex;
+		Sprite zombie;
+	
+		if (!zombieTex.loadFromFile("png/Attack (1).png"))
+			throw "Could not load cat.png!";
+	
+		zombie.setTexture(zombieTex);
+		zombie.setScale(Vector2f(0.5f, 0.6f));
+		int zombieSpawnTimer = 15;
+	
+		std::vector<Sprite> zombies;
+		zombies.push_back(Sprite(zombie));
+
+
+
+	/******************************enermy*********************************/
 
 	// set BG
 	sf::RectangleShape background(sf::Vector2f(1920.f, 1080.f));
@@ -42,16 +64,16 @@ int main()
 
 	/*************************** background about *****************************/
 
-	sf::RectangleShape Abackground(sf::Vector2f(1080.f, 1920.f));
+	sf::RectangleShape Abackground(sf::Vector2f(1920.f, 1080.f));
 	Texture AboutTexture;
-	AboutTexture.loadFromFile("img/bg/menu.png");
+	AboutTexture.loadFromFile("bg/bg1.png");
 	Abackground.setTexture(&AboutTexture);
 
 	/*************************** background score *****************************/
 
 	sf::RectangleShape Sbackground(sf::Vector2f(1920.f, 1080.f));
 	Texture ScoreTexture;
-	ScoreTexture.loadFromFile("img/bg/menu.png");
+	ScoreTexture.loadFromFile("bg/bg.png");
 	Sbackground.setTexture(&ScoreTexture);
 
 
@@ -61,28 +83,38 @@ int main()
 	int row = 0;
 	int frameCounter = 0;
 
-	/*************************** ÊÃéÒ§ player *****************************/
+	/*************************** load player *****************************/
 	sf::Texture pTexture;
 	sf::Sprite player;
 	sf::Clock clock;
+	Texture playerTex;
+	int hp = 10;
+	RectangleShape hpBar;
+	hpBar.setFillColor(Color::Red);
+	hpBar.setSize(Vector2f((float)hp * 20.f, 20.f));
+	hpBar.setPosition(200.f, 10.f);
+		
 
-	if (!pTexture.loadFromFile("png/hoinoi4..png"))
+	if (!pTexture.loadFromFile("png/hoinoiii.png"))
 		std::cout << "Error could not load player image" << std::endl;
 	player.setTexture(pTexture);
 	player.setScale(0.5f, 0.6f);
 
 	
+	
+	
 
-	//Main Menu Open
-
-	while (MENU.isOpen())
+/******************************************************Main menu open**********************************************************************/
+goto MENU;
+MENU:	
+while (Window.isOpen())
 	{
 		Event event;
-		while (MENU.pollEvent(event))
+		while (Window.pollEvent(event))
 		{
 			if (event.type == Event::Closed)
 			{
-				MENU.close();
+				Window.close();
 			}
 			if (event.type == Event::KeyReleased)
 			{
@@ -96,154 +128,196 @@ int main()
 					break;
 				}
 				if (event.key.code == Keyboard::Return) {
-					RenderWindow Play(VideoMode(screenDimensions.x, screenDimensions.y), "HOINOI VILLAGE");
-					RenderWindow Score(VideoMode(screenDimensions.x, screenDimensions.y), "HOINOI VILLAGE");
-					RenderWindow About(VideoMode(screenDimensions.x, screenDimensions.y), "HOINOI VILLAGE");
-
+					
+					
 					int x = mainMenu.MainMenuPressed();
 
-					if (x == 1)
-					{
-
-						//Start the game loop
-						while (Play.isOpen()) {
-							clock.restart();
-							sf::Event aevent;
-							while (Play.pollEvent(aevent)) {
-								if (aevent.type == Event::Closed) {
-									Play.close();
-								}
-								if (aevent.type == Event::KeyPressed) {
-									if (aevent.key.code == Keyboard::Escape) {
-										Play.close();
-									}
-								}
-							}
-
-							//Update model
-							player.setTextureRect(sf::IntRect(641 * frame, 514 * row, 641, 514));
-
-							if (frameCounter == 100) {
-								frame = (frame + 1) % 4;
-								frameCounter = 0;
-							}
-							frameCounter++;
-
-							if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-								row = 2;
-								player.move(0, 0.3f);
-								
-							}
-
-							if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-								row = 3;
-								player.move(-0.3f, 0);
-							}
-
-							if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-								row = 2;
-								player.move(0.3f, 0);
-								
-							}
-
-							 if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-								row = 2;
-								player.move(0, -0.3);
-								
-							}
-							 if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-								player.move(0, 0);
-								row = 1;
-							}
-
-							// Idle check
-							else if (row == 2 && !sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !sf::Keyboard::isKeyPressed(sf::Keyboard::W))row = 0;
-							else if (row == 3 && !sf::Keyboard::isKeyPressed(sf::Keyboard::A))row = 0;
-						
-							else if (row == 1 && !sf::Keyboard::isKeyPressed(sf::Keyboard::E))row = 0;
-
-							About.close();
-							Score.close();
-							Play.clear();
-
-							
-							
-							Play.draw(Pbackground); //ÇÒ´ background
-						
-							Play.draw(player); //ÇÒ´ player
-							
-
-							Play.display();
-
-						}
-					}
-
-					if (x == 2) {
-
-						while (Score.isOpen()) {
-
-							Event aevent;
-							while (Score.pollEvent(aevent)) {
-								if (aevent.type == Event::Closed) {
-									Score.close();
-								}
-								if (aevent.type == Event::KeyPressed) {
-									if (aevent.key.code == Keyboard::Escape) {
-										Score.close();
-									}
-								}
-							}
-
-							Play.close();
-							Score.clear();
-							About.close();
-
-							Score.draw(Sbackground);
-
-							Score.display();
-						}
-					}
-					if (x == 3) {
-
-						while (About.isOpen()) {
-
-							Event aevent;
-							while (About.pollEvent(aevent)) {
-								if (aevent.type == Event::Closed) {
-									About.close();
-								}
-								if (aevent.type == Event::KeyPressed) {
-									if (aevent.key.code == Keyboard::Escape) {
-										About.close();
-									}
-								}
-							}
-
-							Play.close();
-							Score.clear();
-							About.clear();
-
-							About.draw(Abackground);
-
-							About.display();
-						}
-					}
-					if (x == 4)
-						MENU.close();
+					if (x == 1)goto Play;
+					else if (x == 2) goto Score;
+					else if (x == 3) goto About;
+					else if (x == 4)
+						Window.close();
 					break;
 
 				}
 			}
 		}
 
-
-
-		MENU.clear();
-		MENU.draw(background);
-		mainMenu.draw(MENU);
-		MENU.display();
+		Window.clear();
+		Window.draw(background);
+		mainMenu.draw(Window);
+		Window.display();
 
 
 	}
+	
 
+
+
+Play:
+	while (Window.isOpen()&& hp > 0) {
+		clock.restart();
+		sf::Event aevent;
+		while (Window.pollEvent(aevent)) {
+			if (aevent.type == Event::Closed) {
+				Window.close();
+			}
+			if (aevent.type == Event::KeyPressed) {
+				if (aevent.key.code == Keyboard::Escape) {
+					goto MENU;
+
+				}
+
+			}
+		}
+//(ENEMIES)
+			for (size_t i = 0; i < zombies.size(); i++)
+			{
+				zombies[i].move(-4.f, 0.f);
+
+				if (zombies[i].getPosition().x < 0 - zombie.getGlobalBounds().width)
+					zombies.erase(zombies.begin() + i);
+			}
+
+			if (zombieSpawnTimer < 50)
+				zombieSpawnTimer++;
+
+			if (zombieSpawnTimer >= 50)
+			{
+				zombie.setPosition(Window.getSize().x, rand() % int(Window.getSize().y - zombie.getGlobalBounds().height));
+				zombies.push_back(Sprite(zombie));
+				zombieSpawnTimer = 0;
+			}
+
+			//COLLISION
+			for (size_t i = 0; i < zombies.size(); i++)
+			{
+				if (player.getGlobalBounds().intersects(zombies[i].getGlobalBounds()))
+				{
+					hp--;
+					zombies.erase(zombies.begin() + i);
+				}
+			}
+
+			//UI
+			hpBar.setSize(Vector2f((float)hp * 20.f, 20.f));
+
+
+		
+
+
+		//Collision
+
+		if (player.getPosition().y > Window.getSize().y -40 - player.getGlobalBounds().height)
+			player.setPosition(player.getPosition().x, Window.getSize().y  -40 -player.getGlobalBounds().height);
+
+		if (player.getPosition().y < 80)
+			player.setPosition(player.getPosition().x, 80);
+
+
+
+
+		//Update model
+		player.setTextureRect(sf::IntRect(636.5 * frame, 550 * row, 636.5, 550));
+
+		if (frameCounter == 15) {
+			frame = (frame + 1) % 4;
+			frameCounter = 0;
+		}
+		frameCounter++;
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+			row = 2;
+			player.move(0, 1.f);
+
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+			row = 3;
+			player.move(-1.f, 0);
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+			row = 2;
+			player.move(1.f, 0);
+
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+			row = 2;
+			player.move(0, -1.f);
+
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+			player.move(0, 0);
+			row = 1;
+		}
+
+		// Idle check
+		else if (row == 2 && !sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !sf::Keyboard::isKeyPressed(sf::Keyboard::W))row = 0;
+		else if (row == 3 && !sf::Keyboard::isKeyPressed(sf::Keyboard::A))row = 0;
+
+		else if (row == 1 && !sf::Keyboard::isKeyPressed(sf::Keyboard::E))row = 0;
+
+		Window.clear();
+
+
+
+		Window.draw(Pbackground); //ÇÒ´ background
+
+		Window.draw(player); //ÇÒ´ player
+			
+		for (size_t i = 0; i < zombies.size(); i++)
+		{
+			Window.draw(zombies[i]);
+		}
+		Window.draw(hpBar);
+		Window.display();
+
+	}
+	goto MENU;
+
+About:	
+	while (Window.isOpen()) {
+
+		Event aevent;
+		while (Window.pollEvent(aevent)) {
+			if (aevent.type == Event::Closed) {
+				Window.close();
+			}
+			if (aevent.type == Event::KeyPressed) {
+				if (aevent.key.code == Keyboard::Escape) {
+					goto MENU;
+				}
+			}
+		}
+
+		Window.clear();
+		Window.draw(Abackground);
+		Window.display();
+	}
+
+
+Score:
+	while (Window.isOpen()) {
+
+		Event aevent;
+		while (Window.pollEvent(aevent)) {
+			if (aevent.type == Event::Closed) {
+				Window.close();
+			}
+			if (aevent.type == Event::KeyPressed) {
+				if (aevent.key.code == Keyboard::Escape) {
+					goto MENU;
+				}
+			}
+		}
+
+		Window.clear();
+		Window.draw(Sbackground);
+		Window.display();
+	}
+
+
+	return 0;
 }
