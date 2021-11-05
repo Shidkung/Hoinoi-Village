@@ -19,7 +19,7 @@ int main()
 
 	sf::Vector2i screenDimensions(1920, 1080);
 
-	sf::RenderWindow Window(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Hoinoi village", sf::Style::Close | sf::Style::Fullscreen);
+	sf::RenderWindow Window(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Hoinoi village", sf::Style::Close  );
 	MainMenu mainMenu(Window.getSize().x, Window.getSize().y);
 
 	Window.setKeyRepeatEnabled(false);
@@ -33,11 +33,11 @@ int main()
 		Texture zombieTex;
 		Sprite zombie;
 	
-		if (!zombieTex.loadFromFile("png/Attack (1).png"))
+		if (!zombieTex.loadFromFile("png/enermy01.png"))
 			throw "Could not load cat.png!";
 	
 		zombie.setTexture(zombieTex);
-		zombie.setScale(Vector2f(0.5f, 0.6f));
+		zombie.setScale(Vector2f(2.f, 2.f));
 		int zombieSpawnTimer = 15;
 	
 		std::vector<Sprite> zombies;
@@ -98,7 +98,7 @@ int main()
 	if (!pTexture.loadFromFile("png/hoinoiii.png"))
 		std::cout << "Error could not load player image" << std::endl;
 	player.setTexture(pTexture);
-	player.setScale(0.5f, 0.6f);
+	player.setScale(0.4f, 0.6f);
 
 	
 	
@@ -171,6 +171,11 @@ Play:
 			}
 		}
 //(ENEMIES)
+		int randY = 25;
+		while (randY<=200 || randY>=800)
+		{
+			randY = rand();
+		}
 			for (size_t i = 0; i < zombies.size(); i++)
 			{
 				zombies[i].move(-4.f, 0.f);
@@ -184,8 +189,12 @@ Play:
 
 			if (zombieSpawnTimer >= 50)
 			{
-				zombie.setPosition(Window.getSize().x, rand() % int(Window.getSize().y - zombie.getGlobalBounds().height));
+				zombie.setPosition(Window.getSize().x, randY);
 				zombies.push_back(Sprite(zombie));
+				while (randY <= 200 || randY >= 2000)
+				{
+					randY = rand();
+				}
 				zombieSpawnTimer = 0;
 			}
 
@@ -218,9 +227,9 @@ Play:
 
 
 		//Update model
-		player.setTextureRect(sf::IntRect(636.5 * frame, 550 * row, 636.5, 550));
+		player.setTextureRect(sf::IntRect(640 * frame, 555.6 * row, 640, 555.6));
 
-		if (frameCounter == 15) {
+		if (frameCounter == 10) {
 			frame = (frame + 1) % 4;
 			frameCounter = 0;
 		}
@@ -228,24 +237,24 @@ Play:
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 			row = 2;
-			player.move(0, 1.f);
+			player.move(0, 3.f);
 
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
 			row = 3;
-			player.move(-1.f, 0);
+			player.move(-3.f, 0);
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
 			row = 2;
-			player.move(1.f, 0);
+			player.move(3.f, 0);
 
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 			row = 2;
-			player.move(0, -1.f);
+			player.move(0, -3.f);
 
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
