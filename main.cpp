@@ -43,6 +43,9 @@ int main()
 	bullet.setScale(0.2f, 0.2f);
 
 	std::vector<Sprite> bullets;
+	int score = 0;
+	/*********************************Score******************************************************************/
+
 
 
 
@@ -320,6 +323,7 @@ Play:
 					{
 						bullets.erase(bullets.begin() + i);
 						zombies.erase(zombies.begin() + k);
+						score++;
 						break;
 					}
 				}
@@ -333,6 +337,8 @@ Play:
 		if (row == 3 && !sf::Keyboard::isKeyPressed(sf::Keyboard::A))row = 0;
 
 		else if (row == 1 && !sf::Keyboard::isKeyPressed(sf::Keyboard::E))row = 0;
+
+		
 
 		Window.clear();
 
@@ -397,4 +403,93 @@ Score:
 	}
 
 
+}
+
+
+
+
+
+
+void Showtexet(int x, int y, string word, int size, sf::RenderWindow& window, sf::Font* font)
+{
+	sf::Text text;
+	text.setFont(*font);
+	text.setPosition(x, y);
+	text.setString(word);
+	text.setCharacterSize(size);
+	window.draw(text);
+}
+
+void updatascore(string a, int b)
+{
+	FILE* fp;
+	char temp[255];
+	int score[6];
+	string name[6];
+	vector <pair<int, string>> userScore;
+	fp = fopen("./Score.txt", "r");
+	if (fp == NULL)
+		printf("File not found\n");
+
+	for (int i = 0; i < 5; i++)
+	{
+		fscanf(fp, "%s", &temp);
+		name[i] = temp;
+		fscanf(fp, "%d", &score[i]);
+		userScore.push_back(make_pair(score[i], name[i]));
+	}
+
+	name[5] = a;
+	score[5] = b;
+	userScore.push_back(make_pair(score[5], name[5]));
+	sort(userScore.begin(), userScore.end());
+	fclose(fp);
+	fopen("Score.txt", "w");
+	for (int i = 5; i >= 1; i--)
+	{
+		strcpy(temp, userScore[i].second.c_str());
+		fprintf(fp, "%s %d\n", temp, userScore[i].first);
+	}
+	fclose(fp);
+}
+
+void Showscoreboard(sf::RenderWindow& window)
+{
+	sf::Font font;
+	font.loadFromFile("font/Scary Halloween Font.ttf");
+
+	FILE* fp;
+	char temp[255];
+	int score[6];
+	string name[6];
+	fp = fopen("./Score.txt", "r");
+	for (int i = 0; i < 5; i++)
+	{
+		char no[3] = { '1' + i };
+		no[1] = '.';
+		no[2] = '\0';
+		Showtexet(700, 350 + 100 * i, no, 50, window, &font);
+		fscanf(fp, "%s", &temp);
+		Showtexet(750, 350 + 100 * i, temp, 50, window, &font);
+		fscanf(fp, "%d", &score[i]);
+		char sc[10];
+		int k = 0, j;
+		if (score[i] == 0)
+			sc[k++] = 48;
+		while (score[i] > 0)
+		{
+			sc[k++] = score[i] % 10 + 48;
+			score[i] /= 10;
+		}
+		sc[k] = '\0';
+		char show[10];
+		for (j = 0; j < strlen(sc); j++)
+		{
+			show[j] = sc[strlen(sc) - 1 - j];
+		}
+		show[j] = '\0';
+		Showtexet(1100, 350 + 100 * i, show, 50, window, &font);
+	}
+	fclose(fp);
+	//Cout
 }
