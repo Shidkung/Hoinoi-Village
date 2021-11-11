@@ -43,9 +43,16 @@ int main()
 	bullet.setScale(0.2f, 0.2f);
 
 	std::vector<Sprite> bullets;
-	int score = 0;
-	/*********************************Score******************************************************************/
 
+	/*********************************Score******************************************************************/
+	Text scoreText;
+	sf::Font font;
+	font.loadFromFile("font/Scary Halloween Font.ttf");
+	scoreText.setFont(font);
+	scoreText.setCharacterSize(40);
+	scoreText.setFillColor(Color::Red);
+	scoreText.setPosition(1400.f, 10.f);
+	int score = 0;
 
 
 
@@ -331,6 +338,7 @@ Play:
 		}
 
 
+		scoreText.setString("Score : " + std::to_string(score));
 
 		// Idle check
 		if (row == 2 && !sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !sf::Keyboard::isKeyPressed(sf::Keyboard::W))row = 0;
@@ -346,7 +354,7 @@ Play:
 
 		Window.draw(Pbackground); //ÇÒ´ background
 		Window.draw(player); //ÇÒ´ player
-
+		Window.draw(scoreText);
 		for (size_t i = 0; i < zombies.size(); i++)
 		{
 			Window.draw(zombies[i]);
